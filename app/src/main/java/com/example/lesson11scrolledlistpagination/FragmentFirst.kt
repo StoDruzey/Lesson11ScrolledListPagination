@@ -17,6 +17,8 @@ class FragmentFirst : Fragment() {
         CounterAdapter(requireContext())
     }
 
+    private var lastCounter = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,9 +36,10 @@ class FragmentFirst : Fragment() {
             recyclerView.layoutManager = linearLayoutManager //recyclerView from xml
             recyclerView.adapter = adapter
             recyclerView.addVerticalSpace() //this extension is defined in the file RecyclerViewExtensions
-            recyclerView.addPaginationListener(linearLayoutManager)
-            val items = load(0, 50) //list from adapter
-            adapter.submitList(items.map { Item.Counter(it) })
+            recyclerView.addPaginationListener(linearLayoutManager, ITEMS_TO_LOAD) {
+                loadData()
+            }
+            loadData()
         }
     }
 
@@ -45,5 +48,16 @@ class FragmentFirst : Fragment() {
         _binding = null
     }
 
+    private fun loadData() {
+        val items = load(lastCounter, ITEMS_TO_LOAD) //list from adapter
+        lastCounter = items.last() //after loading data change the value of the counter
+        val recentItems = adapter.currentList //recent list from adapter to add a new list to scroll up and down:
+        val newItems = recentItems + items.map { Item.Counter(it) }
+        adapter.submitList(newItems)
+    }
 
+    companion object {
+        private const val PAGE_SIZE = 50
+        private const val ITEMS_TO_LOAD = 15
+    }
 }

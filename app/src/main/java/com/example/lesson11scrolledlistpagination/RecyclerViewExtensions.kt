@@ -27,11 +27,17 @@ fun RecyclerView.addVerticalSpace(@DimenRes spaceRes: Int = R.dimen.list_vertica
 }
 
 fun RecyclerView.addPaginationListener(
-    linearLayoutManager: LinearLayoutManager
+    linearLayoutManager: LinearLayoutManager,
+    itemsToLoad: Int, //how many items before the end of the list we start downloading the next page
+    onLoadMore: () -> Unit //lambda is a signal to load the next page of items
 ) {
     addOnScrollListener(object : RecyclerView.OnScrollListener(){
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            Log.d("RecyclerView", "onScrolled $dy")
+            val lastVisiblePosition = linearLayoutManager.findLastVisibleItemPosition() //the last visible position
+            val itemCount = linearLayoutManager.itemCount //how many items are in whole list
+            if (itemsToLoad + lastVisiblePosition >= itemCount) {
+                onLoadMore()
+            }
         }
     })
 }
