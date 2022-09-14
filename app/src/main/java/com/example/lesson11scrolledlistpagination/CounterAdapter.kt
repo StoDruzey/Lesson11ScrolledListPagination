@@ -1,6 +1,7 @@
 package com.example.lesson11scrolledlistpagination
 
 import android.content.Context
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lesson11scrolledlistpagination.databinding.ItemCounterBinding
 import com.example.lesson11scrolledlistpagination.databinding.ItemLoadingBinding
+import java.util.logging.Handler
 
 sealed class Item {
     data class Counter(val value: Int) : Item()
@@ -71,6 +73,16 @@ fun load(lastCounter: Int, itemsToLoad: Int): List<Int> {
     return List(itemsToLoad) {
         lastCounter + 1 + it
     }
+}
+
+fun load(lastCounter: Int, itemsToLoad: Int, action: (List<Int>) -> Unit) { //this method is misuderstandable yet
+    android.os.Handler(Looper.getMainLooper())
+        .postDelayed(
+            {
+                action(load(lastCounter, itemsToLoad))
+            },
+            5000
+        )
 }
 
 class CounterViewHolder(

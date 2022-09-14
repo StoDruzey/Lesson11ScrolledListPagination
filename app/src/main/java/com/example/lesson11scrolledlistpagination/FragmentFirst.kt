@@ -16,7 +16,7 @@ class FragmentFirst : Fragment() {
     private val adapter by lazy {
         CounterAdapter(requireContext())
     }
-
+    private var isLoading = false
     private var lastCounter = 0
 
     override fun onCreateView(
@@ -49,11 +49,16 @@ class FragmentFirst : Fragment() {
     }
 
     private fun loadData() {
-        val items = load(lastCounter, ITEMS_TO_LOAD) //list from adapter
-        lastCounter = items.last() //after loading data change the value of the counter
-        val recentItems = adapter.currentList //recent list from adapter to add a new list to scroll up and down:
-        val newItems = recentItems + items.map { Item.Counter(it) }
-        adapter.submitList(newItems)
+        if (isLoading) return
+        isLoading = true
+        load(lastCounter, PAGE_SIZE)  {items ->
+            lastCounter = items.last() //after loading data change the value of the counter
+            val recentItems = adapter.currentList //recent list from adapter to add a new list to scroll up and down:
+            val newItems = recentItems + items.map { Item.Counter(it) }
+            adapter.submitList(newItems)
+            isLoading = false
+        } //list from adapter
+
     }
 
     companion object {
