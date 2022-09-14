@@ -51,10 +51,11 @@ class FragmentFirst : Fragment() {
     private fun loadData() {
         if (isLoading) return
         isLoading = true
+
         load(lastCounter, PAGE_SIZE)  {items ->
             lastCounter = items.last() //after loading data change the value of the counter
-            val recentItems = adapter.currentList //recent list from adapter to add a new list to scroll up and down:
-            val newItems = recentItems + items.map { Item.Counter(it) }
+            val recentItems = adapter.currentList.dropLastWhile { it == Item.Loading } //recent list from adapter to add a new list to scroll up and down:
+            val newItems = recentItems + items.map { Item.Counter(it) } + Item.Loading //adding an element "loading"
             adapter.submitList(newItems)
             isLoading = false
         } //list from adapter

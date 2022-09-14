@@ -49,7 +49,10 @@ class CounterAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as CounterViewHolder).bind(getItem(position) as Item.Counter)
+        holder as? CounterViewHolder ?: return
+        val item = getItem(position)
+        if (item !is Item.Counter) return
+        holder.bind(item)
     }
 
     companion object {
