@@ -31,9 +31,11 @@ class FragmentFirst : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding){
             val linearLayoutManager = LinearLayoutManager(requireContext())
-            recyclerView.layoutManager = linearLayoutManager
+            recyclerView.layoutManager = linearLayoutManager //recyclerView from xml
             recyclerView.adapter = adapter
-            val items = load(0, 50)
+            recyclerView.addVerticalSpace() //this extension is defined in the file RecyclerViewExtensions
+            recyclerView.addPaginationListener(linearLayoutManager)
+            val items = load(0, 50) //list from adapter
             adapter.submitList(items.map { Item.Counter(it) })
         }
     }
